@@ -106,7 +106,10 @@ public class Coin {
         this.aversBig = aversBig;
         this.revers = revers;
         this.reversBig = reversBig;
-
-
     }
+
+    public Coin() {
+    }
+
+
 }

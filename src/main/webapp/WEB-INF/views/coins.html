@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>coins</title>
+    <title>Everything coins</title>
 </head>
 <body>
+<div th:each="coin:${coins}">
+    <a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}" th:text="${coin.getCname()}">coin</a>
+    <a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}" text=""><img th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'r.jpg'" th:alt="${coin.getPartNumber()}" width="100" height="100"></a>
+    <a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}" text=""><img th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'.jpg'" th:alt="${coin.getPartNumber()}" width="100" height="100"></a>
+</div>
+
 
 </body>
 </html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${coin.getPartNumber()}">Coin</title>
+</head>
+<body>
+<p th:text="${coin.getCname()}">VALUE</p>
+<p th:text="${coin.getPartNumber()}">VALUE</p>
+<a th:href="'https://cbr.ru/dzi/?tilesources='+${coin.getPartNumber()}+'r'" text="">
+    <img th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'r.jpg'" th:alt="${coin.getPartNumber()}">
+</a>
+<a th:href="'https://cbr.ru/dzi/?tilesources='+${coin.getPartNumber()}" text="">
+    <img th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'.jpg'" th:alt="${coin.getPartNumber()}">
+</a>
+</body>
+</html>

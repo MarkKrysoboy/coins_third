@@ -5,6 +5,14 @@
     <title>update_db</title>
 </head>
 <body>
+<form method="post" th:action="@{/coins/update_db}" enctype="multipart/form-data">
+<p>Добавить монеты из файла</p>
+    <label for="file">Выберите файл</label>
+    <br/>
+    <input type="file" id="file" >
+    <br/>
+    <input type="submit" value="Добавить данные">
+</form>
 
 </body>
 </html>
