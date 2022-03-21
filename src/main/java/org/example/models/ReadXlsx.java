@@ -9,14 +9,39 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class ReadXlsx {
     private MultipartFile file;
     private List<Coin> coins;
+    private String str;
 
-       public ReadXlsx() {
+    public File multipartFileToFile(MultipartFile multipart, String fileName) throws IOException {
+        File convFile = new File(System.getProperty("java.io.tmpdir")+"/"+fileName);
+        multipart.transferTo(convFile);
+        return convFile;
+    }
+
+    @Override
+    public String toString() {
+        return "ReadXlsx{" +
+                "file=" + file +
+                ", coins=" + coins +
+                ", str='" + str + '\'' +
+                '}';
+    }
+
+    public String getStr() {
+        return str;
+    }
+
+    public void setStr(String str) {
+        this.str = str;
+    }
+
+    public ReadXlsx() {
     }
 
     public ReadXlsx(MultipartFile file) {
@@ -43,7 +68,8 @@ public class ReadXlsx {
 
     public List<Coin> readXlsx() {
 //        file = new File("d:\\RC_2019.xlsx");
-        try (FileInputStream fileInputStream = new FileInputStream((File) file)) {
+        coins = new ArrayList<>();
+        try (FileInputStream fileInputStream = new FileInputStream(multipartFileToFile(file, file.getName()))) {
             Workbook workbook = new XSSFWorkbook(fileInputStream);
             XSSFSheet sheet = (XSSFSheet) workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
@@ -51,16 +77,18 @@ public class ReadXlsx {
             while (rowIterator.hasNext()) {
                 row = rowIterator.next();
                 Coin coin = new Coin();
+                if (row.getCell(0) == null) break;
+
                 coin.setPartNumber(row.getCell(0).toString());
                 coin.setDt(row.getCell(1).getDateCellValue());
-                coin.setCname(row.createCell(2).toString());
-                coin.setSname(row.createCell(3).toString());
-                coin.setNominal(row.createCell(4).toString());
-                coin.setMetal(row.createCell(5).toString());
+                coin.setCname(row.getCell(2).toString());
+                if (row.getCell(3) != null){
+                    coin.setSname(row.getCell(3).toString());
+                }
+                coin.setNominal(row.getCell(4).toString());
+                coin.setMetal(row.getCell(5).toString());
 
                 coins.add(coin);
-
-
             }
         } catch (IOException e) {
             e.printStackTrace();

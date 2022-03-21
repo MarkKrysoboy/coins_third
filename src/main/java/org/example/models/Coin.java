@@ -13,6 +13,24 @@ public class Coin {
     private String aversBig;
     private String revers;
     private String reversBig;
+    private int circulation;
+    private int availability;
+
+    public int getCirculation() {
+        return circulation;
+    }
+
+    public void setCirculation(int circulation) {
+        this.circulation = circulation;
+    }
+
+    public int getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(int availability) {
+        this.availability = availability;
+    }
 
     public String getPartNumber() {
         return partNumber;
@@ -95,7 +113,7 @@ public class Coin {
     }
 
     public Coin(String partNumber, Date dt, String cname, String sname, String nominal, String metal, String avers,
-                String aversBig, String revers, String reversBig) {
+                String aversBig, String revers, String reversBig, int circulation, int avialability) {
         this.partNumber = partNumber;
         this.dt = dt;
         this.cname = cname;
@@ -106,10 +124,28 @@ public class Coin {
         this.aversBig = aversBig;
         this.revers = revers;
         this.reversBig = reversBig;
+        this.circulation = circulation;
+        this.availability = avialability;
     }
 
     public Coin() {
     }
 
-
+    @Override
+    public String toString() {
+        return "Coin{" +
+                "partNumber='" + partNumber + '\'' +
+                ", dt=" + dt +
+                ", cname='" + cname + '\'' +
+                ", sname='" + sname + '\'' +
+                ", nominal='" + nominal + '\'' +
+                ", metal='" + metal + '\'' +
+                ", avers='" + avers + '\'' +
+                ", aversBig='" + aversBig + '\'' +
+                ", revers='" + revers + '\'' +
+                ", reversBig='" + reversBig + '\'' +
+                ", circulation=" + circulation +
+                ", availability=" + availability +
+                '}';
+    }
 }

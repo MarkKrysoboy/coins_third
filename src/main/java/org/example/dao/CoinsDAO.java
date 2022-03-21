@@ -1,16 +1,15 @@
 package org.example.dao;
 
 import org.example.models.Coin;
-import org.example.models.ReadXlsx;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class CoinsDAO {
+
+    List<Coin> coins;
 
     private static final String URL = "jdbc:postgresql://localhost:5432/memory_coins";
     private static final String USERNAME = "postgres";
@@ -33,14 +32,16 @@ public class CoinsDAO {
     }
 
     public void save(List<Coin> coins) {
-       ReadXlsx readXlsx = new ReadXlsx();
 
 
         try {
-            for (Coin coin : readXlsx.getCoins()) {
+            for (Coin coin : coins) {
                 // Проверить на наличие дубликата в базе
                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO coins VALUES (?, ?, ?, ?, ?, ?)");
+                // Убрать лишние пробелы в конце
+                // Убрать теги, непечатные знаки и латинницу
                 preparedStatement.setString(1, coin.getPartNumber());
+                // Правильное внесение дат
                 preparedStatement.setDate(2, new java.sql.Date(coin.getDt().getDate()));
                 preparedStatement.setString(3, coin.getCname());
                 preparedStatement.setString(4, coin.getSname());
@@ -49,12 +50,9 @@ public class CoinsDAO {
 
                 preparedStatement.executeUpdate();
             }
-
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
-
     }
 
     public List<Coin> showAll() {
@@ -100,8 +98,39 @@ public class CoinsDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return coin;
+    }
+
+
+    public Object showQuery(String query, String value){
+        List<Coin> coins = new ArrayList<>();
+        String SQL;
+        try {
+            Statement statement = connection.createStatement();
+            if (!query.equals("dt")) {
+                SQL = "SELECT * FROM coins WHERE " + query + " LIKE '" + value + "'";
+            } else {
+                //Дописать запрос по году
+                SQL = "SELECT * FROM coins WHERE YEAR('" + query + "') = " + value;
+            }
+            System.out.println(SQL);
+            ResultSet resultSet = statement.executeQuery(SQL);
+
+            while (resultSet.next()) {
+                Coin coin = new Coin();
+                coin.setPartNumber(resultSet.getString("part_number"));
+                coin.setCname(resultSet.getString("cname"));
+                coin.setSname(resultSet.getString("sname"));
+                coin.setDt(resultSet.getDate("dt"));
+                coin.setNominal(resultSet.getString("nominal"));
+                coin.setMetal(resultSet.getString("metal"));
+
+                coins.add(coin);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return coins;
     }
 
 
