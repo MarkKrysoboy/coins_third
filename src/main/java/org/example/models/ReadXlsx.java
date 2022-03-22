@@ -67,7 +67,6 @@ public class ReadXlsx {
 
 
     public List<Coin> readXlsx() {
-//        file = new File("d:\\RC_2019.xlsx");
         coins = new ArrayList<>();
         try (FileInputStream fileInputStream = new FileInputStream(multipartFileToFile(file, file.getName()))) {
             Workbook workbook = new XSSFWorkbook(fileInputStream);
@@ -78,15 +77,14 @@ public class ReadXlsx {
                 row = rowIterator.next();
                 Coin coin = new Coin();
                 if (row.getCell(0) == null) break;
-
-                coin.setPartNumber(row.getCell(0).toString());
+                coin.setPartNumber(row.getCell(0).toString().trim());
                 coin.setDt(row.getCell(1).getDateCellValue());
-                coin.setCname(row.getCell(2).toString());
+                coin.setCname(row.getCell(2).toString().trim().replaceAll("[&<>; a-z/]", " "));
                 if (row.getCell(3) != null){
-                    coin.setSname(row.getCell(3).toString());
+                    coin.setSname(row.getCell(3).toString().trim());
                 }
-                coin.setNominal(row.getCell(4).toString());
-                coin.setMetal(row.getCell(5).toString());
+                coin.setNominal(row.getCell(4).toString().trim());
+                coin.setMetal(row.getCell(5).toString().trim());
 
                 coins.add(coin);
             }
@@ -94,8 +92,5 @@ public class ReadXlsx {
             e.printStackTrace();
         }
         return coins;
-
     }
-
-
 }

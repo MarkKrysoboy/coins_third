@@ -31,13 +31,6 @@ public class CoinsController {
         return "update_db";
     }
 
-//    @PostMapping("/update_db")
-//    public String addInf(@ModelAttribute("readXlsx") ReadXlsx readXlsx) {
-//        System.out.println(readXlsx.toString());
-//        coinsDAO.save(readXlsx.readXlsx());
-//        return "redirect:/coins";
-//    }
-
     @PostMapping("/coins/update_db")
     public String handleFileUpload(@RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {

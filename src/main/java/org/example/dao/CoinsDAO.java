@@ -1,7 +1,10 @@
 package org.example.dao;
 
 import org.example.models.Coin;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +12,6 @@ import java.util.List;
 @Component
 public class CoinsDAO {
 
-    List<Coin> coins;
 
     private static final String URL = "jdbc:postgresql://localhost:5432/memory_coins";
     private static final String USERNAME = "postgres";
@@ -31,18 +33,29 @@ public class CoinsDAO {
         }
     }
 
+
+    public boolean findCoin(String partNumber) {
+        ResultSet resultSet;
+        Boolean bool = null;
+        try {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement("SELECT * FROM coins WHERE part_number=?");
+            preparedStatement.setString(1, partNumber);
+            resultSet = preparedStatement.executeQuery();
+            bool = resultSet.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return bool;
+    }
+
     public void save(List<Coin> coins) {
-
-
         try {
             for (Coin coin : coins) {
-                // Проверить на наличие дубликата в базе
+                if (showCoin(coin.getPartNumber()) != null) continue;
                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO coins VALUES (?, ?, ?, ?, ?, ?)");
-                // Убрать лишние пробелы в конце
-                // Убрать теги, непечатные знаки и латинницу
                 preparedStatement.setString(1, coin.getPartNumber());
-                // Правильное внесение дат
-                preparedStatement.setDate(2, new java.sql.Date(coin.getDt().getDate()));
+                preparedStatement.setDate(2, new java.sql.Date(coin.getDt().getTime()));
                 preparedStatement.setString(3, coin.getCname());
                 preparedStatement.setString(4, coin.getSname());
                 preparedStatement.setString(5, coin.getNominal());
@@ -57,11 +70,12 @@ public class CoinsDAO {
 
     public List<Coin> showAll() {
         List<Coin> coins = new ArrayList<>();
+        String SQL;
         try {
             Statement statement = connection.createStatement();
-            String SQL = "SELECT * FROM coins";
+            SQL = "SELECT * FROM coins";
+            System.out.println(SQL);
             ResultSet resultSet = statement.executeQuery(SQL);
-
             while (resultSet.next()) {
                 Coin coin = new Coin();
                 coin.setPartNumber(resultSet.getString("part_number"));
@@ -78,6 +92,7 @@ public class CoinsDAO {
         }
         return coins;
     }
+
 
     public Coin showCoin(String partNumber) {
         Coin coin = null;
@@ -99,10 +114,11 @@ public class CoinsDAO {
             e.printStackTrace();
         }
         return coin;
+
     }
 
 
-    public Object showQuery(String query, String value){
+    public Object showQuery(String query, String value) {
         List<Coin> coins = new ArrayList<>();
         String SQL;
         try {
