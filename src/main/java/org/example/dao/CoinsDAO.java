@@ -1,8 +1,6 @@
 package org.example.dao;
 
 import org.example.models.Coin;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
@@ -11,7 +9,6 @@ import java.util.List;
 
 @Component
 public class CoinsDAO {
-
 
     private static final String URL = "jdbc:postgresql://localhost:5432/memory_coins";
     private static final String USERNAME = "postgres";
@@ -25,14 +22,12 @@ public class CoinsDAO {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
         try {
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
-
 
     public boolean findCoin(String partNumber) {
         ResultSet resultSet;
@@ -67,6 +62,7 @@ public class CoinsDAO {
             throwables.printStackTrace();
         }
     }
+
 
     public List<Coin> showAll() {
         List<Coin> coins = new ArrayList<>();
@@ -126,8 +122,7 @@ public class CoinsDAO {
             if (!query.equals("dt")) {
                 SQL = "SELECT * FROM coins WHERE " + query + " LIKE '" + value + "'";
             } else {
-                //Дописать запрос по году
-                SQL = "SELECT * FROM coins WHERE YEAR('" + query + "') = " + value;
+                SQL = "SELECT * FROM coins WHERE DATE_PART('year', " + query +") = DATE_PART('year', TIMESTAMP '" + value + "')";
             }
             System.out.println(SQL);
             ResultSet resultSet = statement.executeQuery(SQL);
