@@ -6,7 +6,15 @@
 </head>
 <body>
 <h1>Памятные и инвестиционные монеты Банка России</h1>
-
+<a href="/coins">Все монеты</a>
+<label>Сортировать: </label>
+<a th:href="@{/coins/query}+'?query=part_number&value=part_number'">По умолчанию</a>
+<a th:href="@{/coins/query}+'?query=cname&value=cname'">По названию</a>
+<a th:href="@{/coins/query}+'?query=sname&value=sname'">По серии</a>
+<a th:href="@{/coins/query}+'?query=dt&value=dt'">По дате</a>
+<a th:href="@{/coins/query}+'?query=nominal&value=nominal'">По номиналу</a>
+<a th:href="@{/coins/query}+'?query=metal&value=metal'">По металу</a>
+<br>
 <table border="2">
     <tr>
         <th>Каталожный номер</th>
@@ -34,7 +42,6 @@
             <th>
                 <a th:href="@{/coins/query}+'?query=sname&value='+${coin.getSname()}" th:text="${coin.getSname()}">coin</a>
             </th>
-            <!-- Сделать ссылку на все монеты этого года -->
             <th>
                 <a th:href="@{/coins/query}+'?query=dt&value='+${coin.getDt()}" th:text="${coin.getDt()}">coin</a>
             </th>

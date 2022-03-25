@@ -63,7 +63,11 @@ public class CoinsController {
 
     @GetMapping("/query")
     public String queryCoins(Model model, @RequestParam("query") String query, @RequestParam("value") String value) {
-        model.addAttribute("coins", coinsDAO.showQuery(query, value));
+        if (!value.equals(query)) {
+            model.addAttribute("coins", coinsDAO.showQuery(query, value));
+        } else {
+            model.addAttribute("coins", coinsDAO.sortQuery(query));
+        }
         return "/coins";
     }
 
