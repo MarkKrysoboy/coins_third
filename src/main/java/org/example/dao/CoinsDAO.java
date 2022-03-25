@@ -1,8 +1,14 @@
 package org.example.dao;
 
+import org.apache.commons.io.IOUtils;
+import org.bouncycastle.util.encoders.Base64;
 import org.example.models.Coin;
-import org.springframework.stereotype.Component;
 
+import org.springframework.stereotype.Component;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +16,7 @@ import java.util.List;
 @Component
 public class CoinsDAO {
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/memory_coins";
+    private static final String dbURL = "jdbc:postgresql://localhost:5432/memory_coins";
     private static final String USERNAME = "postgres";
     private static final String PASSWORD = "sqlsql";
 
@@ -23,13 +29,33 @@ public class CoinsDAO {
             e.printStackTrace();
         }
         try {
-            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            connection = DriverManager.getConnection(dbURL, USERNAME, PASSWORD);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
-    public Coin completionCoinFromDb(ResultSet resultSet) throws SQLException {
+    public String toImageBase64 (byte[] bytes) throws UnsupportedEncodingException {
+        byte[] encodeBase64 = Base64.encode(bytes);
+        String base64Encoded = new String(encodeBase64, "UTF-8");
+        return base64Encoded;
+    }
+
+
+
+    private byte[] downloadFile(String Url) {
+        String str = null;
+        try (InputStream inputStream = new URL(Url).openStream()) {
+            byte[] bytes = IOUtils.toByteArray(inputStream);
+            return bytes;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public Coin completionCoinFromDb(ResultSet resultSet) throws SQLException, UnsupportedEncodingException {
         Coin coin = new Coin();
         coin.setPartNumber(resultSet.getString("part_number"));
         coin.setCname(resultSet.getString("cname"));
@@ -37,37 +63,28 @@ public class CoinsDAO {
         coin.setDt(resultSet.getDate("dt"));
         coin.setNominal(resultSet.getString("nominal"));
         coin.setMetal(resultSet.getString("metal"));
+        // Настроить отображение с БД, если нет подгрузить с URL
+        coin.setAvers(toImageBase64(resultSet.getBytes("avers")));
+        coin.setRevers(toImageBase64(resultSet.getBytes("revers")));
         return coin;
     }
-//
-//
-//    public boolean findCoin(String partNumber) {
-//        ResultSet resultSet;
-//        Boolean bool = null;
-//        try {
-//            PreparedStatement preparedStatement =
-//                    connection.prepareStatement("SELECT * FROM coins WHERE part_number=?");
-//            preparedStatement.setString(1, partNumber);
-//            resultSet = preparedStatement.executeQuery();
-//            bool = resultSet.next();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return bool;
-//    }
+
 
     public void save(List<Coin> coins) {
         try {
             for (Coin coin : coins) {
                 if (showCoin(coin.getPartNumber()) != null) continue;
-                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO coins VALUES (?, ?, ?, ?, ?, ?)");
+                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO coins VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? ,?)");
                 preparedStatement.setString(1, coin.getPartNumber());
                 preparedStatement.setDate(2, new java.sql.Date(coin.getDt().getTime()));
                 preparedStatement.setString(3, coin.getCname());
                 preparedStatement.setString(4, coin.getSname());
                 preparedStatement.setString(5, coin.getNominal());
                 preparedStatement.setString(6, coin.getMetal());
-
+                preparedStatement.setBytes(7, downloadFile("https://cbr.ru/legacy/PhotoStore/img/" + coin.getPartNumber() + ".jpg"));
+                preparedStatement.setBytes(8, downloadFile("https://cbr.ru/dzi/?tilesources=" + coin.getPartNumber() + ".jpg"));
+                preparedStatement.setBytes(9, downloadFile("https://cbr.ru/legacy/PhotoStore/img/" + coin.getPartNumber() + "r.jpg"));
+                preparedStatement.setBytes(10, downloadFile("https://cbr.ru/dzi/?tilesources=" + coin.getPartNumber() + "r.jpg"));
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException throwables) {
@@ -84,7 +101,7 @@ public class CoinsDAO {
             while (resultSet.next()) {
                 coins.add(completionCoinFromDb(resultSet));
             }
-        } catch (SQLException e) {
+        } catch (SQLException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return coins;
@@ -92,31 +109,34 @@ public class CoinsDAO {
 
 
     public Coin showCoin(String partNumber) {
-        Coin coin = new Coin();
+        Coin coin = null;
         try {
             PreparedStatement preparedStatement =
                     connection.prepareStatement("SELECT * FROM coins WHERE part_number=?");
             preparedStatement.setString(1, partNumber);
             ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            coin = completionCoinFromDb(resultSet);
+            if (resultSet.next()) {
+                coin = completionCoinFromDb(resultSet);
+            }
 
-        } catch (SQLException e) {
+        } catch (SQLException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return coin;
-
     }
+
 
     public List<Coin> sortQuery(String query) {
         List<Coin> coins = new ArrayList<>();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM coins ORDER BY " + query);
+            // Исправить сортировку по серии (сначала без серии)
+            // Исправить сортировку по номиналу (сортировать как инты)
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 coins.add(completionCoinFromDb(resultSet));
             }
-        } catch (SQLException e) {
+        } catch (SQLException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return coins;
@@ -138,7 +158,7 @@ public class CoinsDAO {
             while (resultSet.next()) {
                 coins.add(completionCoinFromDb(resultSet));
             }
-        } catch (SQLException e) {
+        } catch (SQLException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return coins;

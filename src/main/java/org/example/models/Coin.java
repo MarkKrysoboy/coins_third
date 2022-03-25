@@ -10,9 +10,9 @@ public class Coin {
     private String nominal;
     private String metal;
     private String avers;
-    private String aversBig;
+    private byte[] aversBig;
     private String revers;
-    private String reversBig;
+    private byte[] reversBig;
     private int circulation;
     private int availability;
 
@@ -88,11 +88,11 @@ public class Coin {
         this.avers = avers;
     }
 
-    public String getAversBig() {
+    public byte[] getAversBig() {
         return aversBig;
     }
 
-    public void setAversBig(String aversBig) {
+    public void setAversBig(byte[] aversBig) {
         this.aversBig = aversBig;
     }
 
@@ -104,16 +104,16 @@ public class Coin {
         this.revers = revers;
     }
 
-    public String getReversBig() {
+    public byte[] getReversBig() {
         return reversBig;
     }
 
-    public void setReversBig(String reversBig) {
+    public void setReversBig(byte[] reversBig) {
         this.reversBig = reversBig;
     }
 
     public Coin(String partNumber, Date dt, String cname, String sname, String nominal, String metal, String avers,
-                String aversBig, String revers, String reversBig, int circulation, int avialability) {
+                byte[] aversBig, String revers, byte[] reversBig, int circulation, int avialability) {
         this.partNumber = partNumber;
         this.dt = dt;
         this.cname = cname;
@@ -130,6 +130,19 @@ public class Coin {
 
     public Coin() {
     }
+
+//    public File toFile(byte[] bytes) throws IOException {
+//        Path target = Paths.get("c:\\temp\\new.jpg");
+//
+//        // convert byte[] back to a BufferedImage
+//        InputStream is = new ByteArrayInputStream(bytes);
+//        BufferedImage newBi = ImageIO.read(is);
+//
+//        // save it
+//        ImageIO.write(newBi, "jpg", target.toFile());
+//        return new File("c:\\temp\\new.jpg");
+//
+//    }
 
     @Override
     public String toString() {

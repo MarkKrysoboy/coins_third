@@ -7,12 +7,16 @@
 <body>
 <h2 th:text="${coin.getCname()}">VALUE</h2>
 <a th:href="'https://cbr.ru/dzi/?tilesources='+${coin.getPartNumber()}+'r'" text="">
-    <img th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'r.jpg'"
+    <img th:src="@{'data:image/jpeg;base64,'+${coin.getRevers()}}"
          th:alt="${coin.getPartNumber()}">
+<!--    th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'r.jpg'"-->
 </a>
+
+
 <a th:href="'https://cbr.ru/dzi/?tilesources='+${coin.getPartNumber()}" text="">
-    <img th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'.jpg'"
+    <img th:src="@{'data:image/jpeg;base64,'+${coin.getAvers()}}"
          th:alt="${coin.getPartNumber()}">
+<!--    th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'.jpg'"-->
 </a>
 <table>
     <tr>

@@ -53,14 +53,17 @@
             </th>
             <th>
                 <a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}" text=""><img
-                    th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'r.jpg'"
+                    th:src="@{'data:image/jpeg;base64,'+${coin.getRevers()}}"
                     th:alt="${coin.getPartNumber()}" width="100" height="100"></a>
             </th>
+<!--            th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'r.jpg'"-->
             <th>
                 <a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}" text=""><img
-                    th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'.jpg'"
+
                     th:alt="${coin.getPartNumber()}" width="100" height="100"></a>
             </th>
+
+<!--            th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'.jpg'"-->
             <th><p th:text="${coin.getCirculation()}">coin</p></th>
             <th><p th:text="${coin.getAvailability()}">coin</p></th>
 
