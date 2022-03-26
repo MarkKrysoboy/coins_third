@@ -25,27 +25,26 @@
     </tr>
     <tr>
         <th>Номинал</th>
-        <!-- Сделать ссылку на все монеты тогоже номинала -->
-        <th><a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}"
-               th:text="${coin.getNominal()}">coin</a>
+        <th><a th:href="@{/coins/query}+'?query=nominal&value='+${coin.getNominal()}"
+               th:text="${coin.getNominal()}">
+            coin</a>
         </th>
     </tr>
     <tr>
         <th>Серия</th>
-        <!-- Сделать ссылку на всю серию -->
-        <th><a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}"
-               th:text="${coin.getSname()}">coin</a></th>
+        <th><a th:href="@{/coins/query}+'?query=sname&value='+${coin.getSname()}"
+               th:text="${coin.getSname()}">
+            coin</a></th>
     </tr>
     <tr>
         <th>Дата выпуска</th>
-        <!-- Сделать ссылку на все монеты этого года -->
-        <th><a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}" th:text="${coin.getDt()}">coin</a>
+        <th><a th:href="@{/coins/query}+'?query=dt&value='+${coin.getDt()}"
+               th:text="${coin.getDt()}">coin</a>
         </th>
     </tr>
     <tr>
         <th>Метал</th>
-        <!-- Сделать ссылку на все монеты тогоже металла -->
-        <th><a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}"
+        <th><a th:href="@{/coins/query}+'?query=metal&value='+${coin.getMetal()}"
                th:text="${coin.getMetal()}">coin</a></th>
     </tr>
     <tr>
@@ -55,6 +54,11 @@
     <tr>
         <th>Имеется в наличии</th>
         <th><p th:text="${coin.getAvailability()}">coin</p></th>
+    </tr>
+    <tr>
+        <th>Ссылка на страницу ЦБ России</th>
+        <th><a th:href="'https://cbr.ru/cash_circulation/memorable_coins/coins_base/ShowCoins/?cat_num='+${coin.getPartNumber()}"
+               th:text="'Монета - '+${coin.getPartNumber()}">coin</a></th>
     </tr>
 </table>
 </body>

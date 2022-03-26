@@ -4,7 +4,10 @@ import org.apache.commons.io.IOUtils;
 import org.bouncycastle.util.encoders.Base64;
 import org.example.models.Coin;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -35,13 +38,26 @@ public class CoinsDAO {
         }
     }
 
-    public String toImageBase64 (byte[] bytes) throws UnsupportedEncodingException {
+    public String toImageBase64(byte[] bytes) throws UnsupportedEncodingException {
         byte[] encodeBase64 = Base64.encode(bytes);
         String base64Encoded = new String(encodeBase64, "UTF-8");
         return base64Encoded;
     }
 
-
+    public String getCirculation(String url) {
+        Document doc;
+        String amount = null;
+        try {
+            doc = Jsoup.connect(url).get();
+            String body = doc.text();
+            int beginPos = body.indexOf("Тираж, шт.") + 11;
+            int endPos = body.indexOf("Аверс");
+            amount = body.substring(beginPos, endPos);
+       } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return amount;
+    }
 
     private byte[] downloadFile(String Url) {
         String str = null;
@@ -66,6 +82,7 @@ public class CoinsDAO {
         // Настроить отображение с БД, если нет подгрузить с URL
         coin.setAvers(toImageBase64(resultSet.getBytes("avers")));
         coin.setRevers(toImageBase64(resultSet.getBytes("revers")));
+        coin.setCirculation(resultSet.getString("circulation"));
         return coin;
     }
 
@@ -74,17 +91,20 @@ public class CoinsDAO {
         try {
             for (Coin coin : coins) {
                 if (showCoin(coin.getPartNumber()) != null) continue;
-                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO coins VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? ,?)");
+                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO coins VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? )");
                 preparedStatement.setString(1, coin.getPartNumber());
                 preparedStatement.setDate(2, new java.sql.Date(coin.getDt().getTime()));
                 preparedStatement.setString(3, coin.getCname());
                 preparedStatement.setString(4, coin.getSname());
                 preparedStatement.setString(5, coin.getNominal());
                 preparedStatement.setString(6, coin.getMetal());
-                preparedStatement.setBytes(7, downloadFile("https://cbr.ru/legacy/PhotoStore/img/" + coin.getPartNumber() + ".jpg"));
-                preparedStatement.setBytes(8, downloadFile("https://cbr.ru/dzi/?tilesources=" + coin.getPartNumber() + ".jpg"));
-                preparedStatement.setBytes(9, downloadFile("https://cbr.ru/legacy/PhotoStore/img/" + coin.getPartNumber() + "r.jpg"));
-                preparedStatement.setBytes(10, downloadFile("https://cbr.ru/dzi/?tilesources=" + coin.getPartNumber() + "r.jpg"));
+                preparedStatement.setBytes(7, downloadFile("https://cbr.ru/legacy/PhotoStore/img/"
+                        + coin.getPartNumber() + ".jpg"));
+                preparedStatement.setBytes(8, downloadFile("https://cbr.ru/legacy/PhotoStore/img/"
+                        + coin.getPartNumber() + "r.jpg"));
+                preparedStatement.setString(9,
+                        getCirculation("https://cbr.ru/cash_circulation/memorable_coins/coins_base/ShowCoins/?cat_num="
+                                + coin.getPartNumber()));
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException throwables) {

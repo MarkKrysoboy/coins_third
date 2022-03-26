@@ -40,30 +40,33 @@
                 <a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}" th:text="${coin.getCname()}">coin</a>
             </th>
             <th>
-                <a th:href="@{/coins/query}+'?query=sname&value='+${coin.getSname()}" th:text="${coin.getSname()}">coin</a>
+                <a th:href="@{/coins/query}+'?query=sname&value='+${coin.getSname()}"
+                   th:text="${coin.getSname()}">coin</a>
             </th>
             <th>
                 <a th:href="@{/coins/query}+'?query=dt&value='+${coin.getDt()}" th:text="${coin.getDt()}">coin</a>
             </th>
             <th>
-                <a th:href="@{/coins/query}+'?query=nominal&value='+${coin.getNominal()}" th:text="${coin.getNominal()}">coin</a>
+                <a th:href="@{/coins/query}+'?query=nominal&value='+${coin.getNominal()}"
+                   th:text="${coin.getNominal()}">coin</a>
             </th>
             <th>
-                <a th:href="@{/coins/query}+'?query=metal&value='+${coin.getMetal()}" th:text="${coin.getMetal()}">coin</a>
+                <a th:href="@{/coins/query}+'?query=metal&value='+${coin.getMetal()}"
+                   th:text="${coin.getMetal()}">coin</a>
             </th>
-            <th>
-                <a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}" text=""><img
-                    th:src="@{'data:image/jpeg;base64,'+${coin.getRevers()}}"
-                    th:alt="${coin.getPartNumber()}" width="100" height="100"></a>
-            </th>
-<!--            th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'r.jpg'"-->
             <th>
                 <a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}" text=""><img
-
-                    th:alt="${coin.getPartNumber()}" width="100" height="100"></a>
+                        th:src="@{'data:image/jpeg;base64,'+${coin.getRevers()}}"
+                        th:alt="${coin.getPartNumber()}" width="100" height="100"></a>
+            </th>
+            <!--            th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'r.jpg'"-->
+            <th>
+                <a th:href="@{/coins/{partNumber}(partNumber=${coin.getPartNumber()})}" text=""><img
+                        th:src="@{'data:image/jpeg;base64,'+${coin.getAvers()}}"
+                        th:alt="${coin.getPartNumber()}" width="100" height="100"></a>
             </th>
 
-<!--            th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'.jpg'"-->
+            <!--            th:src="'https://cbr.ru/legacy/PhotoStore/img/'+${coin.getPartNumber()}+'.jpg'"-->
             <th><p th:text="${coin.getCirculation()}">coin</p></th>
             <th><p th:text="${coin.getAvailability()}">coin</p></th>
 

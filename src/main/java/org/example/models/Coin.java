@@ -13,14 +13,14 @@ public class Coin {
     private byte[] aversBig;
     private String revers;
     private byte[] reversBig;
-    private int circulation;
+    private String circulation;
     private int availability;
 
-    public int getCirculation() {
+    public String getCirculation() {
         return circulation;
     }
 
-    public void setCirculation(int circulation) {
+    public void setCirculation(String circulation) {
         this.circulation = circulation;
     }
 
@@ -113,7 +113,7 @@ public class Coin {
     }
 
     public Coin(String partNumber, Date dt, String cname, String sname, String nominal, String metal, String avers,
-                byte[] aversBig, String revers, byte[] reversBig, int circulation, int avialability) {
+                byte[] aversBig, String revers, byte[] reversBig, String circulation, int avialability) {
         this.partNumber = partNumber;
         this.dt = dt;
         this.cname = cname;
