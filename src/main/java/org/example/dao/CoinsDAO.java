@@ -1,5 +1,6 @@
 package org.example.dao;
 
+
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.util.encoders.Base64;
 import org.example.models.Coin;
@@ -15,6 +16,8 @@ import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class CoinsDAO {
@@ -46,21 +49,25 @@ public class CoinsDAO {
 
     public String getCirculation(String url) {
         Document doc;
-        String amount = null;
+        String amount = "";
         try {
             doc = Jsoup.connect(url).get();
             String body = doc.text();
-            int beginPos = body.indexOf("Тираж, шт.") + 11;
-            int endPos = body.indexOf("Аверс");
-            amount = body.substring(beginPos, endPos);
-       } catch (IOException e) {
+            String regexp = "шт\\W\\s[\\d+\\s{1}]+\\b";
+            Pattern pattern = Pattern.compile(regexp);
+            Matcher matcher = pattern.matcher(body);
+            int i = 0;
+            while (matcher.find(i)) {
+                amount = i == 0 ? matcher.group().substring(4) : amount + " / " + matcher.group().substring(4);
+                i = matcher.end();
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return amount;
     }
 
     private byte[] downloadFile(String Url) {
-        String str = null;
         try (InputStream inputStream = new URL(Url).openStream()) {
             byte[] bytes = IOUtils.toByteArray(inputStream);
             return bytes;
@@ -89,22 +96,25 @@ public class CoinsDAO {
 
     public void save(List<Coin> coins) {
         try {
+            byte[] bytes;
+            String circulation;
             for (Coin coin : coins) {
                 if (showCoin(coin.getPartNumber()) != null) continue;
-                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO coins VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? )");
+                PreparedStatement preparedStatement = connection
+                        .prepareStatement("INSERT INTO coins VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? )");
                 preparedStatement.setString(1, coin.getPartNumber());
                 preparedStatement.setDate(2, new java.sql.Date(coin.getDt().getTime()));
                 preparedStatement.setString(3, coin.getCname());
                 preparedStatement.setString(4, coin.getSname());
                 preparedStatement.setString(5, coin.getNominal());
                 preparedStatement.setString(6, coin.getMetal());
-                preparedStatement.setBytes(7, downloadFile("https://cbr.ru/legacy/PhotoStore/img/"
-                        + coin.getPartNumber() + ".jpg"));
-                preparedStatement.setBytes(8, downloadFile("https://cbr.ru/legacy/PhotoStore/img/"
-                        + coin.getPartNumber() + "r.jpg"));
-                preparedStatement.setString(9,
-                        getCirculation("https://cbr.ru/cash_circulation/memorable_coins/coins_base/ShowCoins/?cat_num="
-                                + coin.getPartNumber()));
+                bytes = downloadFile("https://cbr.ru/legacy/PhotoStore/img/" + coin.getPartNumber() + ".jpg");
+                preparedStatement.setBytes(7, bytes);
+                bytes = downloadFile("https://cbr.ru/legacy/PhotoStore/img/" + coin.getPartNumber() + "r.jpg");
+                preparedStatement.setBytes(8, bytes);
+                circulation = getCirculation("https://cbr.ru/cash_circulation/memorable_coins/coins_base/ShowCoins/?cat_num="
+                        + coin.getPartNumber());
+                preparedStatement.setString(9, circulation);
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException throwables) {
